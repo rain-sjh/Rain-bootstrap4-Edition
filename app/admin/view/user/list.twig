@@ -1,0 +1,88 @@
+{% extends 'layout.twig' %}
+
+{% block main %}
+    <div class="layui-body layui-box">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <span>用户列表</span>
+                <div class="layui-right">
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"
+                            onclick="$.Modal('{{ url('user/add') }}')">
+                        <i class="layui-icon">&#xe654;</i> 添加用户
+                    </button>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <form class="layui-form">
+                    <table class="layui-table" lay-even="" lay-skin="row">
+                        <colgroup>
+                            <col width="20%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="20%">
+                            <col width="10%">
+                            <col width="20%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>昵称</th>
+                            <th>用户名</th>
+                            <th>电话</th>
+                            <th>所在组</th>
+                            <th>用户状态</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in list %}
+                            <tr>
+                                <td>
+                                    <img lay-src="{{ avatar(user.avatar,user.gender) }}" class="layui-nav-img">
+                                    <span style="display: inline-block;">{{ user.nickname|default('-') }}</span>
+                                </td>
+                                <td>{{ user.username|default('-') }}</td>
+                                <td>{{ user.phone|default('-') }}</td>
+                                <td class="select-box">
+                                    <select data-id="{{ user.id }}" class="select layui-input-inline" lay-filter="role">
+                                        {% for key,item in role %}
+                                            <option value="{{ key }}" {{ user.role == key?'selected' }}>{{ item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input data-id="{{ user.id }}" type="checkbox" lay-skin="switch"
+                                           lay-text="启用|禁用" {{ user.status?'':'checked' }} lay-filter="status">
+                                </td>
+                                <td class="layui-text-center">
+                                    {{ user.create_time }}<br>{{ user.ip|default('未知') }} ({{ user.ip|city }})
+                                </td>
+                                <td class="link-item">
+                                    <button type="button" class="layui-btn layui-btn-primary layui-btn-sm"
+                                            onclick="$.Modal('{{ url('user/edit',{id:user.id}) }}')">编辑
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        layui.use(['form'], function () {
+            let form = layui.form;
+            form.on('switch(status)', function (data) {
+                $.Get('{{ url('user/status') }}', {id: $(data.elem).data('id'), status: data.elem.checked})
+            });
+            form.on('select(role)', function (data) {
+                $.Get('{{ url('user/role') }}', {id: $(data.elem).data('id'), role: data.value})
+            });
+        });
+    </script>
+{% endblock %}

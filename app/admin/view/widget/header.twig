@@ -1,0 +1,27 @@
+<div class="layui-header layui-bg-black">
+    <a class="layui-logo" href="{{ url('/admin') }}">
+        <img src="{{ config('site').logo }}" alt="" height="50">
+    </a>
+    <ul class="layui-nav layui-layout-left" lay-shrink="all">
+        {% for menu in menus('menu') %}
+            {% if not menu.is_hide %}
+                <li class="layui-nav-item {{ active(menu.id,'layui-this') }}">
+                    <a href="{{ url(menu.path) }}">
+                        <i class="layui-icon">{{ menu.icon|raw }}</i> {{ menu.name }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item" lay-unselect>
+            <a href="javascript:">
+                <img lay-src="{{ avatar(user('avatar'),user('gender')) }}"
+                     class="layui-nav-img">{{ request().userInfo.nickname }}
+            </a>
+        </li>
+        <li class="layui-nav-item" lay-unselect>
+            <a href="javascript:" onclick="$.Get('{{ url('/logout') }}')">退出</a>
+        </li>
+    </ul>
+</div>
